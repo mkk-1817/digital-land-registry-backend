@@ -29,20 +29,21 @@ def login():
         return jsonify({"msg": "Invalid credentials"}), 401
     
     access_token = create_access_token(identity=username, expires_delta=datetime.timedelta(hours=1))
-    return jsonify({"access_token": access_token})
+    return jsonify({"access_token": access_token,"role":"user"})
 
 @app.route('/register', methods=['POST'])
 def register():
     data = request.json
     username = data.get("username")
     password = data.get("password")
-    
+    fname=data.get("fname")
+    lname=data.get("lname")    
     if users_collection.find_one({"username": username}):
         return jsonify({"msg": "User already exists"}), 400
     
     hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
-    users_collection.insert_one({"username": username, "password": hashed_password})
-    return jsonify({"msg": "User registered successfully"})
+    users_collection.insert_one({"username": username, "password": hashed_password,"fname":fname,"lname":lname,"role":"user"})
+    return jsonify({"msg": "User registered successfully","role":"user"})
 
 if __name__ == '__main__':
     app.run(debug=True)
